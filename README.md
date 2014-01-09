@@ -1,0 +1,1 @@
+This Omeka 2.x plugin is used to customize CUL's instance of Omeka.
