@@ -95,115 +95,6 @@ function cul_general_get_unit_contact()
   return $unit_contact;
 }
 
-/**
- * fcd1, 7/30/13: Gonna try something. New method, copied from exhibit_builder_page_nav
- * fcd1 added a call to exhibit_builder_child_page_nav for the current page, so the nav list
- * will show the children of the current page.
- *
- * Original comment for exhibit_builder_page_nav
- * Return the markup for the exhibit page navigation.
- *
- * @param ExhibitPage|null $exhibitPage If null, uses the current exhibit page
- * @return string
- */
-function fcd1_exhibit_builder_page_nav($exhibitPage = null)
-{
-    if (!$exhibitPage) {
-        if (!($exhibitPage = get_current_record('exhibit_page', false))) {
-	  return;
-	}
-    }
-
-    $exhibit = $exhibitPage->getExhibit();
-    $html = '<ul class="exhibit-page-nav navigation" id="secondary-nav">' . "\n";
-    $pagesTrail = $exhibitPage->getAncestors();
-    $pagesTrail[] = $exhibitPage;
-    $html .= '<li>';
-    $html .= '<a class="exhibit-title" href="'. html_escape(exhibit_builder_exhibit_uri($exhibit)) . '">';
-    $html .= cul_insert_angle_brackets(html_escape($exhibit->title)) .
-      '</a></li>' . "\n";
-    foreach ($pagesTrail as $page) {
-        $linkText = $page->title;
-        $pageExhibit = $page->getExhibit();
-        $pageParent = $page->getParent();
-        $pageSiblings = ($pageParent ? exhibit_builder_child_pages($pageParent) : $pageExhibit->getTopPages()); 
-
-        $html .= '<li class="precedes-ul-tag"><ul>' . "\n";
-        foreach ($pageSiblings as $pageSibling) {
-            $html .= '<li' . ($pageSibling->id == $page->id ? ' class="current"' : '') . '>';
-            $html .= '<a class="exhibit-page-title" href="' . html_escape(exhibit_builder_exhibit_uri($exhibit, $pageSibling)) . '">';
-            $html .= cul_insert_angle_brackets(html_escape($pageSibling->title))
-	      . "</a></li>\n";
-	    // fcd1, 8/8/13: I added the following two lines (compared to default exhibit_puilder_page_nav()
-	    if ($pageSibling->id == $page->id) {
-	      $html .= exhibit_builder_child_page_nav();
-	    }
-        }
-        $html .= "</ul>\n</li>\n";
-    }
-    $html .= '</ul>' . "\n";
-    $html = apply_filters('exhibit_builder_page_nav', $html);
-    return $html;
-}
-
-function fcd1_exhibit_builder_page_nav_bis($home_link_title = null,
-					   $exhibitPage = null)
-{
-    if (!$exhibitPage) {
-        if (!($exhibitPage = get_current_record('exhibit_page', false))) {
-	  return "Pickles! get_current_record returned null";
-	}
-    }
-
-    $exhibit = $exhibitPage->getExhibit();
-    $pagesTrail = $exhibitPage->getAncestors();
-    $pagesTrail[] = $exhibitPage;
-    $html = '<ul class="exhibit-page-nav navigation" id="secondary-nav">' . "\n";
-    // fcd1, 8/8/13: my stuff
-    //    $html = '<ul class="cul-general-exhibit-nav-ul">' . "\n";
-    $html .= '<li id="cul-general-exhibit-nav-title">';
-    $html .= '<a class="exhibit-title" href="'. html_escape(exhibit_builder_exhibit_uri($exhibit)) . '">';
-    if ($home_link_title) {
-      $html .= $home_link_title .'</a></li>' . "\n";
-    } else {
-      $html .= cul_insert_angle_brackets(html_escape($exhibit->title)) .
-	'</a></li>' . "\n";
-    }
-    // fcd1, 12Aug13: got rid of the foreach loop, now just unshift page out of pagesTrail array
-    // in argument to exhibit_builder_exhibit_uri() call
-    //    foreach ($pagesTrail as $page) {
-    $page = array_shift($pagesTrail);
-        $linkText = $page->title;
-        $pageExhibit = $page->getExhibit();
-        $pageParent = $page->getParent();
-        $pageSiblings = ($pageParent ? exhibit_builder_child_pages($pageParent) : $pageExhibit->getTopPages()); 
-
-	// fcd1, 8/12/13: added class to the ul below
-        $html .= '<li class="precedes-ul-tag">' . '<ul class="exhibit-page-nav navigation">' . "\n";
-        foreach ($pageSiblings as $pageSibling) {
-            $html .= '<li' . ($pageSibling->id == $page->id ? ' class="current"' : '') . '>';
-            $html .= '<a href="' . html_escape(exhibit_builder_exhibit_uri($exhibit, $pageSibling)) . '">';
-            $html .= cul_insert_angle_brackets(html_escape($pageSibling->title)) .
-	      "</a></li>\n";
-	    // fcd1, 8/8/13: I added the following two lines (compared to default exhibit_puilder_page_nav()
-	    if ($pageSibling->id == $page->id) {
-	      if ($pagesTrail) {
-		$html .= fcd1_exhibit_builder_child_page_nav(array_shift($pagesTrail), $pageSibling);
-	      }
-	      else {
-
-		$html .= exhibit_builder_child_page_nav();
-	      }
-
-	    }
-        }
-        $html .= "</ul>\n</li>\n";
-	//    }
-    $html .= '</ul>' . "\n";
-    $html = apply_filters('exhibit_builder_page_nav', $html);
-    return $html;
-}
-
 function cul_general_legacy_exhibit_builder_page_nav($home_link_title = null,
 						     $exhibitPage = null)
 {
@@ -492,6 +383,7 @@ function cul_legacy_exhibit_builder_render_exhibit_page($exhibitPage = null)
 function cul_exhibit_builder_attachment_markup($attachment, $fileOptions, $linkProperties)
 {
   // fcd1, 8/30/13: creating a link to the item page should always occur, it cannot be an option
+  // If it needs to be an option, uncomment the get_theme_option call below
   //  $link_to_item = get_theme_option('Link Item Page');
   $link_to_item = 1;
   
@@ -607,7 +499,6 @@ function cul_exhibit_builder_thumbnail_gallery($start, $end,
         array('start' => $start, 'end' => $end, 'props' => $props, 'thumbnail_type' => $thumbnailType));
 }
 
-// New version of the above method, use this one
 // fcd1, 8/19/13: RMBL => removed html_escape around page title  to handle embedded <em> in section titles
  // $child_page_render is used to store the first child page in the selected top-level page
  // this is to mimic the omeka 1.5.3. behavior, where, when a section is selected, the content of the first
