@@ -435,8 +435,12 @@ function cul_exhibit_builder_attachment_markup($attachment, $fileOptions, $linkP
     // fcd1, 8/28/13: add code that creates a link to the item page for this image
 		            $html .= '<div class="link-to-item-page">';
     $html .= exhibit_builder_link_to_exhibit_item('Click here for item information',
-						  array('target' => '_blank',
-							'class' => 'link-to-item-page'),
+						  array('class' => 'link-to-item-page',
+							// fcd1, 01/16/14:
+							// uncomment the following line to have 
+							// the item page open in a new tab:
+							// 'target' => '_blank'
+							),
 						  $attachment['item']);
 	      $html .='</div>';
   }
@@ -485,8 +489,12 @@ function cul_exhibit_builder_thumbnail_gallery($start, $end,
 		            $html .= '<div class="link-to-item-page">';
 	      // fcd1, 8/28/13: add code that creates a link to the item page for this image
 	      $html .= exhibit_builder_link_to_exhibit_item('Click here for item information',
-							    array('target' => '_blank',
-								  'class' => 'link-to-item-page'),
+							    array('class' => 'link-to-item-page',
+								  // fcd1, 01/16/14:
+								  // uncomment the following line to have 
+								  // the item page open in a new tab:
+								  // 'target' => '_blank'
+								  ),
 							    $attachment['item']);
 	      $html .='</div>';
 	    }
@@ -681,4 +689,28 @@ function cul_copyright_information() {
 
 }
 
+function cul_display_links_to_exhibit_pages_containing_item() {
+
+  $item = get_current_record('item');
+  $db = get_db();
+
+  $select = "                                                                                                        
+    SELECT ep.* FROM {$db->prefix}exhibit_pages ep
+    INNER JOIN {$db->prefix}exhibit_page_entries epe ON epe.page_id = ep.id
+    WHERE epe.item_id = ?";
+
+  $exhbit = NULL;
+  $exhibit_pages = $db->getTable("ExhibitPage")->fetchObjects($select,array($item->id));
+  
+  if(!empty($exhibit_pages)) {
+    echo '<div class="list-exhibit-pages">';
+    echo '<h3>Item appears in the following exhibit pages</h3>';
+    foreach($exhibit_pages as $exhibit_page) {
+      $exhibit = $exhibit_page->getExhibit();
+      echo '<p><a href="'.html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page
+								  )).'">'.$exhibit->title.': '.$exhibit_page->title.'</a></p>';
+    }
+  }
+  echo '</div>';
+}
 ?>
