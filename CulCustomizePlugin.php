@@ -704,7 +704,11 @@ function cul_display_links_to_exhibit_pages_containing_item() {
   
   if(!empty($exhibit_pages)) {
     echo '<div class="list-exhibit-pages">';
-    echo '<h3>Item appears in the following exhibit pages</h3>';
+    if (count($exhibit_pages) == 1) {
+      echo '<h3>Item appears in the following exhibit page</h3>';
+    } else {
+      echo '<h3>Item appears in the following exhibit pages</h3>';
+    }
     foreach($exhibit_pages as $exhibit_page) {
       $exhibit = $exhibit_page->getExhibit();
       echo '<p><a href="'.html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page
