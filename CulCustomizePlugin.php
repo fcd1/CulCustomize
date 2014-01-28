@@ -717,4 +717,20 @@ function cul_display_links_to_exhibit_pages_containing_item() {
   }
   echo '</div>';
 }
+
+function cul_return_exhibit_pages_containing_current_item() {
+
+  $item = get_current_record('item');
+  $db = get_db();
+
+  $select = "                                                                                                        
+    SELECT ep.* FROM {$db->prefix}exhibit_pages ep
+    INNER JOIN {$db->prefix}exhibit_page_entries epe ON epe.page_id = ep.id
+    WHERE epe.item_id = ?";
+
+  $exhbit = NULL;
+  $exhibit_pages = $db->getTable("ExhibitPage")->fetchObjects($select,array($item->id));
+
+  return $exhibit_pages;
+}
 ?>
