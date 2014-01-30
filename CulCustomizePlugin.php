@@ -20,6 +20,132 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     return $local_array;
 
   }
+
+  public static function display_links_to_exhibit_pages_containing_item($exhibit_pages,
+									$exhibit_page_containing_item) {
+
+    if(!empty($exhibit_pages)) {
+      $html_output_links = '';
+      $number_of_links = 0;
+
+      // First, generate the code for the links. Keep track of number of links
+      foreach($exhibit_pages as $exhibit_page) {
+        if ($exhibit_page !== $exhibit_page_containing_item) {
+          $exhibit = $exhibit_page->getExhibit();
+          $html_output_links .= '<p><a href="';
+          $html_output_links .= html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page));
+          $html_output_links .= '">'.$exhibit->title.': ';
+	  $parent_page = $exhibit_page->getParent();
+          $html_output_links .= ( $parent_page ? $parent_page->title . ': ' : '');
+          $html_output_links .= $exhibit_page->title.'</a></p>';
+          $number_of_links++;
+        }
+      }
+      // fcd1, 01/30/14:
+      // Generate html for the div and heading preceding the list of links
+      // Of course, only do this if there a links to display
+      if ($number_of_links) {
+        echo '<div class="list-exhibit-pages">';
+        if ($number_of_links == 1) {
+          echo '<h3>Item also appears in the following exhibit page</h3>';
+	} else {
+	  echo '<h3>Item also appears in the following exhibit pages</h3>';
+	}
+	echo $html_output_links;
+	echo '</div>';
+      }
+    }
+  }
+
+  public static function return_exhibit_pages_containing_current_item() {
+
+    $item = get_current_record('item');
+    $db = get_db();
+
+    $select = "
+      SELECT ep.* FROM {$db->prefix}exhibit_pages ep
+      INNER JOIN {$db->prefix}exhibit_page_entries epe ON epe.page_id = ep.id
+      WHERE epe.item_id = ?";
+
+    $exhibit_pages = $db->getTable("ExhibitPage")->fetchObjects($select,array($item->id));
+
+    return $exhibit_pages;
+  }
+
+  // fcd1, 01/28/14:
+  // This function is used in exhibit-builder/exhibits/item.php
+  // This function takes an array of pages containing an element,
+  // and figures out, best as it can, if one of them is the page which
+  // was used to get to the item page.
+  // If not page was found, return NULL
+  // Unfortunately, from the item page, there is no way
+  // to get the exhibit page we came from - get_current_record('exhibit_page')
+  // returns an error. So, instead, we will see if the link to the previous
+  // page ($_SERVER['HTTP_REFERER']) is a link to one of the pages
+  // which contains the item. This may not always be the case, since it is
+  // possible that the user arrived on the item page via a web search. In
+  // this case, do not print a link back to the exhibit page.
+  public static function return_exhibit_page_to_link_back_to($exhibit_pages,
+                                                             $bool_this_is_a_legacy_exhibit = NULL) {
+
+    if ( !($exhibit_pages) ) {
+      // DEBUG, 1 line
+      echo '<h1>exhibit_page not set.</h1>';
+      return NULL;
+    }
+
+    // Return NULL if PHP has no record of a referring page
+    if ( !(array_key_exists('HTTP_REFERER',$_SERVER)) ) {
+      // DEBUG, 1 line
+      echo '<h1>HTTP_REFERER does not exist</h1>';
+      return NULL;
+    }
+
+    // First, check to see if $http_previous contains server uri. If not,
+    // no need to continue because the user did not get to the item page
+    // via an exhibition. Possible scenario is that user got here via the
+    // results of a web search
+    $http_previous = $_SERVER['HTTP_REFERER'];
+    if ( !(strstr($http_previous, WEB_ROOT)) ) {
+      // DEBUG, 1 line
+      echo '<h1>WEB_ROOT not found in previous page URI</h1>';
+      return NULL;
+    }
+
+    $exhibit_page_containing_item = NULL;
+    // DEBUG, 1 line
+    // echo '<p>'.$http_previous.'</p>';
+
+    // Check all the pages containing the item to see if we get a match
+    foreach($exhibit_pages as $exhibit_page) {
+      $exhibit = $exhibit_page->getExhibit();
+      // DEBUG, 2 lines
+      // echo '<p>'.exhibit_builder_exhibit_uri($exhibit,$exhibit_page).'</p>';
+      // echo '<p>'.exhibit_builder_exhibit_uri($exhibit,$exhibit_page->getParent()).'</p>';
+      if (strstr($http_previous,exhibit_builder_exhibit_uri($exhibit, $exhibit_page))) {
+	$exhibit_page_containing_item = $exhibit_page;
+	break;
+      }
+    }
+    // fcd1, 01/27/14:
+    // add the following test for legacy exhibitions (from Omeka 1.5.3)
+    // because the previous page may be a top-level page which displays the contents
+    // of the first child page, to mimic the behavior of sections in Omeka 1.5.3
+    // Only do this if the page was not matched in the above foreach
+    if ( !($exhibit_page_containing_item) && $bool_this_is_a_legacy_exhibit) {
+      foreach($exhibit_pages as $exhibit_page) {
+	$exhibit = $exhibit_page->getExhibit();
+	if (strstr($http_previous,exhibit_builder_exhibit_uri($exhibit,$exhibit_page->getParent() ) ) ) {
+	  $exhibit_page_containing_item = $exhibit_page;
+	  break;
+	}
+      }
+    }    
+    // $exhibit_page_containing_item will now either contain the exhibit page used to get to the item page,
+    // or it will be NULL.
+    return $exhibit_page_containing_item;
+  }
+
 }
 
 add_filter('exhibit_builder_exhibit_display_item', 
@@ -689,48 +815,4 @@ function cul_copyright_information() {
 
 }
 
-function cul_display_links_to_exhibit_pages_containing_item() {
-
-  $item = get_current_record('item');
-  $db = get_db();
-
-  $select = "                                                                                                        
-    SELECT ep.* FROM {$db->prefix}exhibit_pages ep
-    INNER JOIN {$db->prefix}exhibit_page_entries epe ON epe.page_id = ep.id
-    WHERE epe.item_id = ?";
-
-  $exhbit = NULL;
-  $exhibit_pages = $db->getTable("ExhibitPage")->fetchObjects($select,array($item->id));
-  
-  if(!empty($exhibit_pages)) {
-    echo '<div class="list-exhibit-pages">';
-    if (count($exhibit_pages) == 1) {
-      echo '<h3>Item appears in the following exhibit page</h3>';
-    } else {
-      echo '<h3>Item appears in the following exhibit pages</h3>';
-    }
-    foreach($exhibit_pages as $exhibit_page) {
-      $exhibit = $exhibit_page->getExhibit();
-      echo '<p><a href="'.html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page
-								  )).'">'.$exhibit->title.': '.$exhibit_page->title.'</a></p>';
-    }
-  }
-  echo '</div>';
-}
-
-function cul_return_exhibit_pages_containing_current_item() {
-
-  $item = get_current_record('item');
-  $db = get_db();
-
-  $select = "                                                                                                        
-    SELECT ep.* FROM {$db->prefix}exhibit_pages ep
-    INNER JOIN {$db->prefix}exhibit_page_entries epe ON epe.page_id = ep.id
-    WHERE epe.item_id = ?";
-
-  $exhbit = NULL;
-  $exhibit_pages = $db->getTable("ExhibitPage")->fetchObjects($select,array($item->id));
-
-  return $exhibit_pages;
-}
 ?>
