@@ -47,9 +47,9 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
       if ($number_of_links) {
         echo '<div class="list-exhibit-pages">';
         if ($number_of_links == 1) {
-          echo '<h3>Item also appears in the following exhibit page</h3>';
+          echo '<h3>Item also appears in the following exhibition page</h3>';
 	} else {
-	  echo '<h3>Item also appears in the following exhibit pages</h3>';
+	  echo '<h3>Item also appears in the following exhibition pages</h3>';
 	}
 	echo $html_output_links;
 	echo '</div>';
