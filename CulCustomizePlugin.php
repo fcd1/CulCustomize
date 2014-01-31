@@ -24,36 +24,45 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
   public static function display_links_to_exhibit_pages_containing_item($exhibit_pages,
 									$exhibit_page_containing_item) {
 
-    if(!empty($exhibit_pages)) {
-      $html_output_links = '';
-      $number_of_links = 0;
+    if(empty($exhibit_pages)) {
+      // No exhibit pages to link to, so just return
+      return;
+    }
+    $html_output_links = '';
+    $number_of_links = 0;
 
-      // First, generate the code for the links. Keep track of number of links
-      foreach($exhibit_pages as $exhibit_page) {
-        if ($exhibit_page !== $exhibit_page_containing_item) {
-          $exhibit = $exhibit_page->getExhibit();
-          $html_output_links .= '<p><a href="';
-          $html_output_links .= html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page));
-          $html_output_links .= '">'.$exhibit->title.': ';
-	  $parent_page = $exhibit_page->getParent();
-          $html_output_links .= ( $parent_page ? $parent_page->title . ': ' : '');
-          $html_output_links .= $exhibit_page->title.'</a></p>';
-          $number_of_links++;
-        }
+    if ($exhibit_page_containing_item) {
+      // Since there is a link to the exhibit page we came from, use
+      // the world "also" in the heading for the other links
+      $also = 'also';
+    } else {
+      $also = '';
+    }
+    // First, generate the code for the links. Keep track of number of links
+    foreach($exhibit_pages as $exhibit_page) {
+      if ($exhibit_page !== $exhibit_page_containing_item) {
+	$exhibit = $exhibit_page->getExhibit();
+	$html_output_links .= '<p><a href="';
+	$html_output_links .= html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page));
+	$html_output_links .= '">'.$exhibit->title.': ';
+	$parent_page = $exhibit_page->getParent();
+	$html_output_links .= ( $parent_page ? $parent_page->title . ': ' : '');
+	$html_output_links .= $exhibit_page->title.'</a></p>';
+	$number_of_links++;
       }
-      // fcd1, 01/30/14:
-      // Generate html for the div and heading preceding the list of links
-      // Of course, only do this if there a links to display
-      if ($number_of_links) {
-        echo '<div class="list-exhibit-pages">';
-        if ($number_of_links == 1) {
-          echo '<h3>Item also appears in the following exhibition page</h3>';
-	} else {
-	  echo '<h3>Item also appears in the following exhibition pages</h3>';
-	}
-	echo $html_output_links;
-	echo '</div>';
+    }
+    // fcd1, 01/30/14:
+    // Generate html for the div and heading preceding the list of links
+    // Of course, only do this if there a links to display
+    if ($number_of_links) {
+      echo '<div class="list-exhibit-pages">';
+      if ($number_of_links == 1) {
+	echo '<h3>Item ' . $also . ' appears in the following exhibition page</h3>';
+      } else {
+	echo '<h3>Item ' . $also . ' appears in the following exhibition pages</h3>';
       }
+      echo $html_output_links;
+      echo '</div>';
     }
   }
 
