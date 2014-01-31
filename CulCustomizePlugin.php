@@ -98,15 +98,11 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
                                                              $bool_this_is_a_legacy_exhibit = NULL) {
 
     if ( !($exhibit_pages) ) {
-      // DEBUG, 1 line
-      echo '<h1>exhibit_page not set.</h1>';
       return NULL;
     }
 
     // Return NULL if PHP has no record of a referring page
     if ( !(array_key_exists('HTTP_REFERER',$_SERVER)) ) {
-      // DEBUG, 1 line
-      echo '<h1>HTTP_REFERER does not exist</h1>';
       return NULL;
     }
 
@@ -116,21 +112,14 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     // results of a web search
     $http_previous = $_SERVER['HTTP_REFERER'];
     if ( !(strstr($http_previous, WEB_ROOT)) ) {
-      // DEBUG, 1 line
-      echo '<h1>WEB_ROOT not found in previous page URI</h1>';
       return NULL;
     }
 
     $exhibit_page_containing_item = NULL;
-    // DEBUG, 1 line
-    // echo '<p>'.$http_previous.'</p>';
 
     // Check all the pages containing the item to see if we get a match
     foreach($exhibit_pages as $exhibit_page) {
       $exhibit = $exhibit_page->getExhibit();
-      // DEBUG, 2 lines
-      // echo '<p>'.exhibit_builder_exhibit_uri($exhibit,$exhibit_page).'</p>';
-      // echo '<p>'.exhibit_builder_exhibit_uri($exhibit,$exhibit_page->getParent()).'</p>';
       if (strstr($http_previous,exhibit_builder_exhibit_uri($exhibit, $exhibit_page))) {
 	$exhibit_page_containing_item = $exhibit_page;
 	break;
