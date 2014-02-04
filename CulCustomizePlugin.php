@@ -5,6 +5,8 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
   protected $_filters = array('admin_items_form_tabs');
 
+  protected $_hooks = array('admin_head');
+
   public function filterAdminItemsFormTabs($tabs, $args)
   {
 
@@ -19,6 +21,10 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
     return $local_array;
 
+  }
+
+  public function hookAdminHead() {
+    queue_css_file('culAdmin');
   }
 
   public static function display_links_to_exhibit_pages_containing_item($exhibit_pages,
