@@ -1,3 +1,35 @@
 .index .container #content #flash li.success {
   display:none;
 }
+
+/* fcd1, 10/18/13: added the following to make the "Dublin Core", "MODS" etc.
+headings in the admin item show page smaller */
+body.items.show .element-set h2 {
+	font-size: 18px;
+}
+
+/* fcd1, 10/18/13: added the following to decrease the spacing between lines
+in the admin item show page */
+body.items.show .element .element-text:after {
+	margin: 0 0;
+	height: 0;
+}
+
+/* fcd1, 10/18/13: added the following to increase the size of the image in
+the admin item show page */
+body.items.show .admin-thumb {
+    width: 100%;
+}
+
+/* fcd1, 10/8/13: Want to hide the delete button in the Edit Exhibit screen */
+/* because one may think it is used to delete selected page(s), but it actually */
+/* deletes the whole exhibition */
+.exhibits #exhibit-metadata-form #save .big.red.button.delete-confirm {
+	display: none;
+}
+
+/* fcd1, 10/8/13: color red the delete option under each exhibition in the */
+/* Browse Exhibit screen, to hightlight what it will do */
+.exhibits .container #content #exhibits .exhibit .exhibit-info .action-links a.delete-confirm {
+	color:red;
+}
