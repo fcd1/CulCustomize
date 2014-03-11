@@ -48,13 +48,17 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     foreach($exhibit_pages as $exhibit_page) {
       if ($exhibit_page !== $exhibit_page_containing_item) {
 	$exhibit = $exhibit_page->getExhibit();
-	$html_output_links .= '<p><a href="';
-	$html_output_links .= html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page));
-	$html_output_links .= '">'.$exhibit->title.': ';
-	$parent_page = $exhibit_page->getParent();
-	$html_output_links .= ( $parent_page ? $parent_page->title . ': ' : '');
-	$html_output_links .= $exhibit_page->title.'</a></p>';
-	$number_of_links++;
+	// fcd1, 03/10/14:
+	// Don't display link to private exhibit
+	if ($exhibit->public == 1) {
+	  $html_output_links .= '<p><a href="';
+	  $html_output_links .= html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page));
+	  $html_output_links .= '">'.$exhibit->title.': ';
+	  $parent_page = $exhibit_page->getParent();
+	  $html_output_links .= ( $parent_page ? $parent_page->title . ': ' : '');
+	  $html_output_links .= $exhibit_page->title.'</a></p>';
+	  $number_of_links++;
+	}
       }
     }
     // fcd1, 01/30/14:
