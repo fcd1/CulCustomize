@@ -76,9 +76,12 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     }
   }
 
-  public static function return_exhibit_pages_containing_current_item() {
+  public static function return_exhibit_pages_containing_current_item(Item $item = NULL) {
 
-    $item = get_current_record('item');
+    if (!$item) {
+      $item = get_current_record('item');
+    }
+
     $db = get_db();
 
     $select = "
