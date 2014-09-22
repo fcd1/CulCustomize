@@ -33,3 +33,8 @@ body.items.show .admin-thumb {
 .exhibits .container #content #exhibits .exhibit .exhibit-info .action-links a.delete-confirm {
 	color:red;
 }
+
+/* fcd1, 04/23/13: make the background red when a page is marked for deletion */
+.exhibits .container #content #exhibit-metadata-form #pages-list-container #page-list .page .deleted {
+	background:red;
+}
