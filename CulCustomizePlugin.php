@@ -15,12 +15,6 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
   // We want this so that the options under "Search by Collection"
   // in the Search Items page (which we get when Advanced Search is
   // selected) will be in alphabetical order.
-  /**
-   * Manage search options for collections.
-   *
-   * @param array Search options for collections.
-   * @return array Filtered search options for collections.
-   */
   public function filterCollectionsSelectOptions($options)
   {
     asort($options);
