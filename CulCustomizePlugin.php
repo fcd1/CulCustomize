@@ -3,9 +3,29 @@
 class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 {
 
-  protected $_filters = array('admin_items_form_tabs');
+  protected $_filters = array('admin_items_form_tabs',
+			      'collections_select_options');
 
   protected $_hooks = array('admin_head');
+
+  // fcd1, 9/22/14: Found out about following filter via
+  // omeka.org/forums/topic/re-ordering-collections-alphabetically-in-the-items-page,
+  // This filter is called by get_table_options in libraries/globals.php
+  // The implementation below will alphabetize the list of collections.
+  // We want this so that the options under "Search by Collection"
+  // in the Search Items page (which we get when Advanced Search is
+  // selected) will be in alphabetical order.
+  /**
+   * Manage search options for collections.
+   *
+   * @param array Search options for collections.
+   * @return array Filtered search options for collections.
+   */
+  public function filterCollectionsSelectOptions($options)
+  {
+    asort($options);
+    return $options;
+  }
 
   public function filterAdminItemsFormTabs($tabs, $args)
   {
