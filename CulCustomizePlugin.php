@@ -609,9 +609,37 @@ function cul_exhibit_builder_thumbnail_gallery($start, $end,
   //  $link_to_item = get_theme_option('Link Item Page');
   $link_to_item = 1;
 
+  // fcd1, 12/17/14: if the title and alt tag are not given to us in the $props array
+  // (if given, this would also mean that each img element would share the same title and
+  // alt attribute value), then we will set them both to the title of the Omeka item
+  // associated with the thumbnail img
+  if (! isset($props['title']) ) {
+    $set_img_title = true;
+  }
+  else {
+    $set_img_title = false;
+  }
+
+  if (! isset($props['alt']) ) {
+    $set_img_alt = true;
+  }
+  else {
+    $set_img_alt = false;
+  }
+
     $html = '';
     for ($i = (int)$start; $i <= (int)$end; $i++) {
       if ($attachment = exhibit_builder_page_attachment($i,0,$exhibitPage)) {
+            // fcd1, 12/17/14: if not set, set the alt and title attribute for the thumbnail img
+            if ($set_img_title) {
+              $props['title'] = metadata($attachment['item'],
+					 array('Dublin Core', 'Title'));
+	    }
+            if ($set_img_alt) {
+              $props['alt'] = metadata($attachment['item'],
+				       array('Dublin Core', 'Title'));
+	    }
+    
             $html .= "\n" . '<div class="exhibit-item">';
             if ($attachment['file']) {
 		// fcd1, 9/9/11: if file is image, have thumbnail link to image. Else, use the default 
