@@ -868,4 +868,26 @@ function cul_copyright_information() {
 
 }
 
+// fcd1, 12/18/14: The following helper function basically just wraps a call
+// to files_for_item. Since all themes called files_for_items with the same
+// arguments, it is easier to wrap the funciton call in this helper
+// function, and have the themes call the helper function. In case we need to
+// add/change an argument to the files_for_item function call, we just have to
+// change it here, instead of having to do it in each theme.
+function cul_files_for_item() {
+
+  $item = get_current_record('item');
+  $imgTitleAndAlt = metadata($item, array('Dublin Core', 'Title'));
+  // fcd1, 01/16/14:
+  // change imageSize from thumbnail (as set in original code) to fullsize
+  echo files_for_item(array('imageSize' => 'fullsize',
+			    'linkAttributes' => array('onclick' => 'return hs.expand(this)',
+						      'class' => 'highslide'),
+			    'imgAttributes' => array('title' => $imgTitleAndAlt,
+						     'alt' => $imgTitleAndAlt)
+			    )
+		      );
+
+}
+ 
 ?>
