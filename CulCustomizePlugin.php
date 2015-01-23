@@ -4,9 +4,37 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 {
 
   protected $_filters = array('admin_items_form_tabs',
-			      'collections_select_options');
+			      'collections_select_options',
+			      'exhibit_attachment_markup');
 
   protected $_hooks = array('admin_head');
+
+  public function filterExhibitAttachmentMarkup($html,$other_stuff)
+  {
+
+    $attachment = $other_stuff['attachment'];
+
+    // fcd1, 8/30/13: creating a link to the item page should always occur, it cannot be an option
+    // If it needs to be an option, uncomment the get_theme_option call below
+    // fcd1, 01/23/15: First off, not all themes have the option 'Link Item Page'
+    // Also, I need to test this to make sure it works in for Omeka 2.2.2
+    // $link_to_item = get_theme_option('Link Item Page');
+    $link_to_item = 1;
+
+    if ($link_to_item) {
+      $html .= exhibit_builder_link_to_exhibit_item('Click here for item information',
+						    array('class' => 'link-to-item-page',
+							  // fcd1, 01/16/14:
+							  // uncomment the following line to have
+							  // the item page open in a new tab:
+							  // 'target' => '_blank'
+							  ),
+						    $attachment->getItem());
+    }
+
+    return $html;
+
+  }
 
   // fcd1, 9/22/14: Found out about following filter via
   // omeka.org/forums/topic/re-ordering-collections-alphabetically-in-the-items-page,
