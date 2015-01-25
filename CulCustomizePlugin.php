@@ -128,8 +128,9 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
     $select = "
       SELECT ep.* FROM {$db->prefix}exhibit_pages ep
-      INNER JOIN {$db->prefix}exhibit_page_entries epe ON epe.page_id = ep.id
-      WHERE epe.item_id = ?";
+      INNER JOIN {$db->prefix}exhibit_page_blocks epb ON epb.page_id = ep.id
+      INNER JOIN {$db->prefix}exhibit_block_attachments eba ON eba.block_id = epb.id
+      WHERE eba.item_id = ?";
 
     $exhibit_pages = $db->getTable("ExhibitPage")->fetchObjects($select,array($item->id));
 
