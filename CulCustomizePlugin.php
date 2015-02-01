@@ -13,6 +13,7 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
   {
 
     $attachment = $other_stuff['attachment'];
+    $file = $attachment->getFile();
 
     // fcd1, 8/30/13: creating a link to the item page should always occur, it cannot be an option
     // If it needs to be an option, uncomment the get_theme_option call below
@@ -20,6 +21,12 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     // Also, I need to test this to make sure it works in for Omeka 2.2.2
     // $link_to_item = get_theme_option('Link Item Page');
     $link_to_item = 1;
+
+    $html = str_replace("download-file","highslide",$html);
+
+    $href_to_image = $file->getWebPath('original');
+    $new_href_and_highslide_info = 'href="' . $href_to_image . '" onclick="return hs.expand(this)" target="_blank"';
+    $html = preg_replace('/href="([a-zA-Z0-9\/\-\.]+)"/',$new_href_and_highslide_info,$html);
 
     if ($link_to_item) {
       $html .= exhibit_builder_link_to_exhibit_item('Click here for item information',
