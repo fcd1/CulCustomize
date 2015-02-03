@@ -15,6 +15,10 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     $attachment = $other_stuff['attachment'];
     $file = $attachment->getFile();
 
+    if (!$file) {
+      return $html;
+    }
+
     // fcd1, 8/30/13: creating a link to the item page should always occur, it cannot be an option
     // If it needs to be an option, uncomment the get_theme_option call below
     // fcd1, 01/23/15: First off, not all themes have the option 'Link Item Page'
