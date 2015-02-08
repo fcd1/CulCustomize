@@ -30,7 +30,7 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
     $href_to_image = $file->getWebPath('original');
     $new_href_and_highslide_info = 'href="' . $href_to_image . '" onclick="return hs.expand(this)" target="_blank"';
-    $html = preg_replace('/href="([a-zA-Z0-9\/\-\.]+)"/',$new_href_and_highslide_info,$html);
+    $html = preg_replace('/href="([a-zA-Z0-9\/\-\.\_]+)"/',$new_href_and_highslide_info,$html);
 
     if ($link_to_item) {
       $html .= exhibit_builder_link_to_exhibit_item('Click here for item information',
