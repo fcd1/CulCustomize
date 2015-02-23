@@ -229,9 +229,16 @@ function filter_exhibit_builder_exhibit_display_item ($html, $displayFilesOption
   return $html;
 }
 
-function cul_general_get_unit_link()
+function cul_general_get_unit_link($libraryUnit = NULL)
 {
-  $unit = get_theme_option('Library Unit');
+
+  if ($libraryUnit) {
+    $unit = $libraryUnit;
+  }
+  else {
+    $unit = get_theme_option('Library Unit');
+  }
+
   if (! isset($unit) or $unit == "")
     return "";
 
@@ -256,9 +263,16 @@ function cul_general_get_unit_link()
   return $unit_link;
 }
 
-function cul_general_get_unit_contact()
+function cul_general_get_unit_contact($libraryUnit = NULL)
 {
-  $unit = get_theme_option('Library Unit');
+
+  if ($libraryUnit) {
+    $unit = $libraryUnit;
+  }
+  else {
+    $unit = get_theme_option('Library Unit');
+  }
+
   if (! isset($unit) or $unit == "")
     return "";
 
