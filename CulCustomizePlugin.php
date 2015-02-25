@@ -278,6 +278,10 @@ function cul_general_get_unit_contact($libraryUnit = NULL)
 
   $unit_contact = "";
 
+  // added by fcd1, 2/25/15: Add generic CUL entry
+  if ($unit == "cul")
+    $unit_contact = 'Columbia University Libraries  / Butler Library  / 535 West 114th St. / New York, NY 10027 / (212) 854-7309 / <a href="mailto:lio@libraries.cul.columbia.edu">info@libraries.cul.columbia.edu</a>';
+
   if ($unit == "rbml") 
     $unit_contact = 'Rare Book &amp; Manuscript Library / Butler Library, 6th Fl. East / 535 West 114th St. / New York, NY 10027 / (212) 854-5153 / <a href="mailto:rbml@libraries.cul.columbia.edu">rbml@libraries.cul.columia.edu</a>';
 
