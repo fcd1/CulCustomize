@@ -7,7 +7,41 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 			      'collections_select_options',
 			      'exhibit_attachment_markup');
 
-  protected $_hooks = array('admin_head');
+  protected $_hooks = array('admin_head',
+			    'admin_items_show_sidebar');
+
+  public function hookAdminItemsShowSidebar($args)
+  {
+
+    $role_current_user = current_user()->role;
+    if ( ($role_current_user == 'super') || ($role_current_user == 'admin') ):
+      
+      $item = $args['item'];
+      $owner_id = $item->owner_id;
+      $user_table = get_db()->getTable('User');
+      $owner = $user_table->find($owner_id);
+      $html = '<div class="panel">';
+      $html .="<h4>Owner of item in Omeka</h4>";
+
+      if ($owner):
+
+        $html .= "<p>" . $owner->name;
+        $html .= "<br>";
+        $html .= "Omeka username: " . $owner->username . "</p>";
+
+      else:
+
+	$html .= "<p>No user defined</p>";
+	$html .="<p>This can happen if original owner was deleted from Omeka.</p>";
+
+      endif;
+
+      $html .= '</div>';
+      echo $html;       
+
+    endif;
+
+  }
 
   public function filterExhibitAttachmentMarkup($html,$other_stuff)
   {
