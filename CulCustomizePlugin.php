@@ -31,8 +31,8 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
       else:
 
-	$html .= "<p>No user defined</p>";
-	$html .="<p>This can happen if original owner was deleted from Omeka.</p>";
+	$html .= "<p>No owner defined</p>";
+	$html .="<p>This can happen if user account who owned item was deleted from Omeka.</p>";
 
       endif;
 
