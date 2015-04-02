@@ -8,7 +8,8 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 			      'exhibit_attachment_markup');
 
   protected $_hooks = array('admin_head',
-			    'admin_items_show_sidebar');
+			    'admin_items_show_sidebar',
+			    'initialize');
 
   public function hookAdminItemsShowSidebar($args)
   {
@@ -43,6 +44,73 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
   }
 
+  public function hookInitialize() {
+    
+    add_file_display_callback(array('mimeTypes' => array('image/jpeg'),
+				    'fileExtensions' => array('jpeg','jpg') ),
+			      'CulCustomizePlugin::jpegHighslideCompatible' );
+
+  }
+
+  public static function jpegHighslideCompatible($file, $options) {
+
+    //fcd1, 01/02/15: Following was copied from derivativeImage() defined in
+    // views/helpers/FileMarkup.php, then modified
+    // BEGIN>>>>>>
+    // Should we ever include more image sizes by default, this will be                                                                                
+    // easier to modify.                                                                                                                               
+    $imgClasses = array(
+			'thumbnail'=>'thumb',
+			'square_thumbnail'=>'thumb',
+			'fullsize'=>'full');
+
+    if (array_key_exists('imageSize', $options)) {
+
+      $imageSize = $options['imageSize'];
+
+    }
+    
+    else {
+
+      $imageSize = 'thumbnail';
+
+    }
+
+    // If we can make an image from the given image size.                                                                                              
+    if (in_array($imageSize, array_keys($imgClasses))) {
+
+      // A class is given to all of the images by default to make it                                                                                 
+      // easier to style. This can be modified by passing it in as an                                                                                
+      // option, but recommended against. Can also modify alt text via an                                                                            
+      // option.                                                                                                                                     
+      $imgClass = $imgClasses[$imageSize];
+
+      if (array_key_exists('imgAttributes', $options)) {
+
+        $imgAttributes = array_merge(array('class' => $imgClass),
+				     (array)$options['imgAttributes']);
+
+      }
+      else {
+
+        $imgAttributes = array('class' => $imgClass);
+
+      }
+      //<<<<<<END
+    }
+    $imgHtml = '<img src="' . html_escape($file->getWebPath($imageSize)) . '" ' . tag_attributes($imgAttributes) . '/>';
+
+
+
+    $href_to_image = $file->getWebPath('original');
+    $highslide_stuff = 'class="highslide Pickles-from-CulCustomize" onclick="return hs.expand(this)" target="_blank"';
+
+    $html = '<a href="' . $href_to_image . '" ' . $highslide_stuff . '>' . $imgHtml . '</a>';
+
+    return $html;
+
+  }
+
   public function filterExhibitAttachmentMarkup($html,$other_stuff)
   {
 
@@ -60,11 +128,9 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     // $link_to_item = get_theme_option('Link Item Page');
     $link_to_item = 1;
 
-    $html = str_replace("download-file","highslide",$html);
-
-    $href_to_image = $file->getWebPath('original');
-    $new_href_and_highslide_info = 'href="' . $href_to_image . '" onclick="return hs.expand(this)" target="_blank"';
-    $html = preg_replace('/href="([a-zA-Z0-9\/\-\.\_]+)"/',$new_href_and_highslide_info,$html);
+    // ExhibitBuilder code has the href point to the item page. We want to point it to the original file
+    $href_to_image = 'href="' . $file->getWebPath('original') . '"';
+    $html = preg_replace('/href="([a-zA-Z0-9\/\-\.\_]+)"/',$href_to_image,$html);
 
     if ($link_to_item) {
       $html .= exhibit_builder_link_to_exhibit_item('Click here for item information',
@@ -973,8 +1039,10 @@ function cul_files_for_item() {
   // fcd1, 01/16/14:
   // change imageSize from thumbnail (as set in original code) to fullsize
   echo files_for_item(array('imageSize' => 'fullsize',
-			    'linkAttributes' => array('onclick' => 'return hs.expand(this)',
-						      'class' => 'highslide'),
+			    // fcd1, 04/02/15: Do not want these set by default to hightslide for all files.
+			    // JPEG callback declared above does it for JPEG files.
+			    //'linkAttributes' => array('onclick' => 'return hs.expand(this)',
+			    // 'class' => 'highslide'),
 			    'imgAttributes' => array('title' => $imgTitleAndAlt,
 						     'alt' => $imgTitleAndAlt)
 			    )
