@@ -103,7 +103,7 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
 
     $href_to_image = $file->getWebPath('original');
-    $highslide_stuff = 'class="highslide Pickles-from-CulCustomize" onclick="return hs.expand(this)" target="_blank"';
+    $highslide_stuff = 'class="highslide" onclick="return hs.expand(this)" target="_blank"';
 
     $html = '<a href="' . $href_to_image . '" ' . $highslide_stuff . '>' . $imgHtml . '</a>';
 
