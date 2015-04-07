@@ -46,13 +46,13 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
   public function hookInitialize() {
     
-    add_file_display_callback(array('mimeTypes' => array('image/jpeg'),
+    add_file_display_callback(array('mimeTypes' => array('image/jpeg','image/png','image/tiff'),
 				    'fileExtensions' => array('jpeg','jpg') ),
-			      'CulCustomizePlugin::jpegHighslideCompatible' );
+			      'CulCustomizePlugin::fileHighslideCompatible' );
 
   }
 
-  public static function jpegHighslideCompatible($file, $options) {
+  public static function fileHighslideCompatible($file, $options) {
 
     //fcd1, 01/02/15: Following was copied from derivativeImage() defined in
     // views/helpers/FileMarkup.php, then modified
