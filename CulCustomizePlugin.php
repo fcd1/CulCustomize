@@ -130,9 +130,30 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     // $link_to_item = get_theme_option('Link Item Page');
     $link_to_item = 1;
 
-    // ExhibitBuilder code has the href point to the item page. We want to point it to the original file
-    $href_to_image = 'href="' . $file->getWebPath('original') . '"';
-    $html = preg_replace('/href="([a-zA-Z0-9\/\-\.\_]+)"/',$href_to_image,$html);
+    $mime_type = metadata($file,'mime_type');
+
+    // fcd1, 04/08/15: Seems the callback registered via add_file_display_callback is not being called
+    // for thumbnails. So I need to add the highslide information here for images.
+    if ( ( $mime_type = 'image/jpeg' )
+	 ||
+	 ( $mime_type = 'image/jpeg' )
+	 ||
+	 ( $mime_type = 'image/jpeg' ) ) {
+
+      $href_to_image = $file->getWebPath('original');
+      $new_href_and_highslide_info = 'href="' . $href_to_image . '" onclick="return hs.expand(this)" target="_blank"';
+      $html = preg_replace('/href="([a-zA-Z0-9\/\-\.\_]+)"/',$new_href_and_highslide_info,$html);
+
+      $html .= '<p>' . $mime_type . '</p>';      
+
+    }
+    else {
+
+      // ExhibitBuilder code has the href point to the item page. We want to point it to the original file
+      $href_to_image = 'href="' . $file->getWebPath('original') . '"';
+      $html = preg_replace('/href="([a-zA-Z0-9\/\-\.\_]+)"/',$href_to_image,$html);
+
+    }
 
     if ($link_to_item) {
       $html .= exhibit_builder_link_to_exhibit_item('Click here for item information',
@@ -144,6 +165,8 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 							  ),
 						    $attachment->getItem());
     }
+
+    // $html .= '<p>' . $mime_type . '</p>';
 
     return $html;
 
