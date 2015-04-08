@@ -1041,10 +1041,6 @@ function cul_files_for_item() {
   // fcd1, 01/16/14:
   // change imageSize from thumbnail (as set in original code) to fullsize
   echo files_for_item(array('imageSize' => 'fullsize',
-			    // fcd1, 04/02/15: Do not want these set by default to hightslide for all files.
-			    // JPEG callback declared above does it for JPEG files.
-			    //'linkAttributes' => array('onclick' => 'return hs.expand(this)',
-			    // 'class' => 'highslide'),
 			    'imgAttributes' => array('title' => $imgTitleAndAlt,
 						     'alt' => $imgTitleAndAlt)
 			    )
