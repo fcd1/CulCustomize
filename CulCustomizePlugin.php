@@ -144,7 +144,8 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
       $new_href_and_highslide_info = 'href="' . $href_to_image . '" onclick="return hs.expand(this)" target="_blank"';
       $html = preg_replace('/href="([a-zA-Z0-9\/\-\.\_]+)"/',$new_href_and_highslide_info,$html);
 
-      $html .= '<p>' . $mime_type . '</p>';      
+      // fcd1, 04/14/15: debugging code, print out mime type
+      // $html .= '<p>' . $mime_type . '</p>';      
 
     }
     else {
