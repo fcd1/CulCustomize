@@ -134,11 +134,11 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
     // fcd1, 04/08/15: Seems the callback registered via add_file_display_callback is not being called
     // for thumbnails. So I need to add the highslide information here for images.
-    if ( ( $mime_type = 'image/jpeg' )
+    if ( ( $mime_type == 'image/jpeg' )
 	 ||
-	 ( $mime_type = 'image/jpeg' )
+	 ( $mime_type == 'image/png' )
 	 ||
-	 ( $mime_type = 'image/jpeg' ) ) {
+	 ( $mime_type == 'image/tiff' ) ) {
 
       $href_to_image = $file->getWebPath('original');
       $new_href_and_highslide_info = 'href="' . $href_to_image . '" onclick="return hs.expand(this)" target="_blank"';
