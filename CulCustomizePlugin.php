@@ -167,8 +167,6 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 						    $attachment->getItem());
     }
 
-    // $html .= '<p>' . $mime_type . '</p>';
-
     return $html;
 
   }
