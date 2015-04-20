@@ -143,7 +143,9 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
       $href_to_image = $file->getWebPath('original');
       $new_href_and_highslide_info = 'href="' . $href_to_image . '" onclick="return hs.expand(this)" target="_blank"';
       $html = preg_replace('/href="([a-zA-Z0-9\/\-\.\_]+)"/',$new_href_and_highslide_info,$html);
-
+      // fcd1, 04/20/15: Following assumes there is a class="exhibit-item-link" attribute
+      // in the html being filetered
+      $html = str_replace('exhibit-item-link','highslide',$html);      
       // fcd1, 04/14/15: debugging code, print out mime type
       // $html .= '<p>' . $mime_type . '</p>';      
 
