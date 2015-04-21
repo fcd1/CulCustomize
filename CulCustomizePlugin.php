@@ -100,11 +100,21 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     }
     $imgHtml = '<img src="' . html_escape($file->getWebPath($imageSize)) . '" ' . tag_attributes($imgAttributes) . '/>';
 
+    $mime_type = metadata($file,'mime_type');
 
-    // fcd1, 07Apr15: Having issues with tiffs, maybe should link to fullsize (I'm assuming it will be jpeg)
-    // instead of original
-    // $href_to_image = $file->getWebPath('original');
-    $href_to_image = $file->getWebPath('fullsize');
+    if ( $mime_type == 'image/jpeg' ) {
+
+      $href_to_image = $file->getWebPath('original');
+
+    } 
+    else {
+
+      // fcd1, 07Apr15: Having issues with tiffs, maybe should link to fullsize (which is a derivative jpeg)
+      // instead of original
+      $href_to_image = $file->getWebPath('fullsize');
+
+    }
+
     $highslide_stuff = 'class="highslide" onclick="return hs.expand(this)" target="_blank"';
 
     $html = '<a href="' . $href_to_image . '" ' . $highslide_stuff . '>' . $imgHtml . '</a>';
