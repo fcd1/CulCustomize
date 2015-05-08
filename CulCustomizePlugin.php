@@ -9,7 +9,69 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
   protected $_hooks = array('admin_head',
 			    'admin_items_show_sidebar',
-			    'initialize');
+			    'initialize',
+			    'edit_exhibit_metadata');
+
+  public function hookEditExhibitMetadata($args)
+  {
+
+    $current_user = $args['user'];
+    $view = $args['view'];
+    $exhibit = $args['exhibit'];
+
+    $role_current_user = $current_user->role;
+    $html = '';
+
+    if ( ($role_current_user == 'super') || ($role_current_user == 'admin') ):
+      $html =  '<div class="field">';
+      $html .=  '<div class="two columns alpha">';
+      $html .= $view->formLabel('owner_id', __('Owner'));
+      $html .= '</div>';
+      $html .= '<div class="five columns omega inputs">';
+      $values = get_table_options('User');
+      $user_table = get_db()->getTable('User');
+
+      foreach ($values as $key => $value) {
+
+	$user = $user_table->findActiveById($key);
+
+	if ($user) {
+
+	  $values[$key] = $value . ' (' . $user->username . ')';
+
+	}
+	else {
+
+	  if ($value != 'Select Below ') {
+
+	    $values[$key] = $value . ' - NOTE: User is inactive.';
+                
+	  }
+
+	}
+
+      }
+      if ($exhibit->owner_id) {
+
+	// this is an existing exhibition                                                                                                     
+	// $html .= get_view()->formSelect('owner_id', $exhibit->owner_id, array(), $values);
+	$html .= $view->formSelect('owner_id', $exhibit->owner_id, array(), $values);
+
+      } else {
+      
+	// $html .= get_view()->formSelect('owner_id', current_user()->id, array(), $values);
+	$html .= $view->formSelect('owner_id', current_user()->id, array(), $values);
+
+      }
+
+      $html .= '</div>';
+      $html .= '</div>';
+
+    endif;
+
+    echo $html;
+
+  }
 
   public function hookAdminItemsShowSidebar($args)
   {
