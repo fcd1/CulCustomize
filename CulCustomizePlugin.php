@@ -40,6 +40,7 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 	  $values[$key] = $value . ' (' . $user->username . ')';
 
 	}
+
 	else {
 
 	  if ($value != 'Select Below ') {
@@ -51,18 +52,31 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 	}
 
       }
-      if ($exhibit->owner_id) {
 
-	// this is an existing exhibition                                                                                                     
-	// $html .= get_view()->formSelect('owner_id', $exhibit->owner_id, array(), $values);
-	$html .= $view->formSelect('owner_id', $exhibit->owner_id, array(), $values);
+      if (!$exhibit->owner_id) {
 
-      } else {
-      
-	// $html .= get_view()->formSelect('owner_id', current_user()->id, array(), $values);
-	$html .= $view->formSelect('owner_id', current_user()->id, array(), $values);
-
+	// fcd1, 05/20/15: Since $exhibit->owner_id is not set, we will set it to the current user
+	$exhibit->owner_id = current_user()->id;
+	
       }
+
+      // following contains optional message
+      $msg = "";
+
+      // fcd1, 05/19/15:
+      // if the owner_id contains the user_id of a user that has been removed from the system, print
+      // a message stating that fact, and set the owner to the current logged-in user.
+      if ( !array_key_exists($exhibit->owner_id, $values) ) {
+	
+	$msg .= '<p class="instructions">' . 
+	  'Owner was originally set to nonexistent user (user_id: ' . $exhibit->owner_id . ').';
+	$msg .= '<br>Owner has been reset to the currently logged-in user.';
+	$msg .= '<br>Select a new owner if appropriate.</p>';
+	$exhibit->owner_id = current_user()->id;	
+      }
+
+      $html .= $view->formSelect('owner_id', $exhibit->owner_id, array(), $values);
+      $html .= $msg;
 
       $html .= '</div>';
       $html .= '</div>';
