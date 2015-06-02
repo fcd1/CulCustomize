@@ -316,14 +316,10 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
 	// fcd1, 06/01/15: It seems that $exhibit_page->getExhibit() will return null if the exhibit
 	// containing the exhibit page is not public AND the access is not being made via a logged-in
-	// user with access to non-public exhibits.
-	if (!$exhibit) {
-	  continue;
-	}
-
+	// user with access to non-public exhibits. So added check on $exhibit .
 	// fcd1, 03/10/14:
 	// Don't display link to private exhibit
-	if ($exhibit->public == 1) {
+	if ( isset($exhibit) && ( $exhibit->public == 1 ) ) {
 	  $html_output_links .= '<p><a href="';
 	  $html_output_links .= html_escape(exhibit_builder_exhibit_uri($exhibit, $exhibit_page));
 	  $html_output_links .= '">'.$exhibit->title.': ';
