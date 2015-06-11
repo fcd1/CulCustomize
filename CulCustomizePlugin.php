@@ -403,6 +403,13 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     // Check all the pages containing the item to see if we get a match
     foreach($exhibit_pages as $exhibit_page) {
       $exhibit = $exhibit_page->getExhibit();
+      // fcd1, 06/11/15: $exhibit_page->getExhibit() will return null if the exhibit
+      // containing the exhibit page is not public AND the access is not being made
+      // via a logged in user with access to non-public exhibits. Of course, if 
+      // $exhibit is null, just skip this iteration in the foreach loop.
+      if (!$exhibit) {
+	continue;
+      }
       if (strstr($http_previous,exhibit_builder_exhibit_uri($exhibit, $exhibit_page))) {
 	$exhibit_page_containing_item = $exhibit_page;
 	break;
