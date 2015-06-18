@@ -209,12 +209,15 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
       return $html;
     }
 
-    // fcd1, 8/30/13: creating a link to the item page should always occur, it cannot be an option
-    // If it needs to be an option, uncomment the get_theme_option call below
-    // fcd1, 01/23/15: First off, not all themes have the option 'Link Item Page'
-    // Also, I need to test this to make sure it works in for Omeka 2.2.2
-    // $link_to_item = get_theme_option('Link Item Page');
-    $link_to_item = 1;
+    // fcd1, 06/18/15: Hide Link Item Page is a checkbox in the cul-general theme config page
+    // NOTE: If the option does not exist (which is the case for all the other themes),
+    // get_theme_option returns null, and the default behavior takes over, which is to show the link.
+    if ( get_theme_option('Hide Link Item Page') ) {
+      $link_to_item = 0;
+    }
+    else {
+      $link_to_item = 1;
+    }
 
     $mime_type = metadata($file,'mime_type');
 
