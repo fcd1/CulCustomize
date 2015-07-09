@@ -212,12 +212,19 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     // fcd1, 06/18/15: Hide Link Item Page is a checkbox in the cul-general theme config page
     // NOTE: If the option does not exist (which is the case for all the other themes),
     // get_theme_option returns null, and the default behavior takes over, which is to show the link.
+    // fcd1, 07/09/15: After further discussion, it was decided that this option will not be offered.
+    // So $link_to_item will always be set to 1.
+    // If this option is enabled in the future, just use its value to set $link_to_item, as is done
+    // in the commented-out code below
+    /*
     if ( get_theme_option('Hide Link Item Page') ) {
       $link_to_item = 0;
     }
     else {
       $link_to_item = 1;
     }
+    */
+    $link_to_item = 1;
 
     $mime_type = metadata($file,'mime_type');
 
