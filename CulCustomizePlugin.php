@@ -5,12 +5,56 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 
   protected $_filters = array('admin_items_form_tabs',
 			      'collections_select_options',
-			      'exhibit_attachment_markup');
+			      'exhibit_attachment_markup',
+			      'browse_themes');
 
   protected $_hooks = array('admin_head',
 			    'admin_items_show_sidebar',
 			    'initialize',
 			    'edit_exhibit_metadata');
+
+  public function filterBrowseThemes($all_themes)
+  {
+
+    $user = current_user();
+    $role_current_user = $user->role;
+    $filtered_themes = array();
+
+    if ( ($role_current_user == 'super') || ($role_current_user == 'admin') ):
+
+      // set CUL General theme as the first choice
+      $filtered_themes = $all_themes;
+      unset($filtered_themes['cul-general']);
+      $filtered_themes = array('cul-general' => $all_themes['cul-general']) + $filtered_themes;
+
+    else:
+
+      // for users of type other than admin or super, only offer cul-general as an option,
+      // as well as the current theme for the exhibit.
+
+      // set CUL General theme as the first choice
+      $filtered_themes['cul-general'] = $all_themes['cul-general'];
+
+      $exhibit = get_current_record('exhibit',  false);
+      $exhibit_theme_name = null;
+
+      if ($exhibit) {
+	
+	$exhibit_theme_name = $exhibit->theme;
+
+      }
+
+      if ($exhibit_theme_name) {
+
+	$filtered_themes[$exhibit_theme_name] = $all_themes[$exhibit_theme_name];
+	
+      }
+      
+    endif;
+
+    return $filtered_themes;
+
+  }
 
   public function hookEditExhibitMetadata($args)
   {
