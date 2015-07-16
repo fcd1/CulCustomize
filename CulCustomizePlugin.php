@@ -506,40 +506,6 @@ function filter_exhibit_builder_exhibit_display_item ($html, $displayFilesOption
   return $html;
 }
 
-function cul_general_get_unit_link($libraryUnit = NULL)
-{
-
-  if ($libraryUnit) {
-    $unit = $libraryUnit;
-  }
-  else {
-    $unit = get_theme_option('Library Unit');
-  }
-
-  if (! isset($unit) or $unit == "")
-    return "";
-
-  $unit_link = "";
-
-  if ($unit == "rbml") 
-    $unit_link = '<a href="http://library.columbia.edu/indiv/rbml.html" class="topNavbarLink" style="text-decoration: none;">Rare Book &amp; Manuscript Library</a>';
-
-  if ($unit == "burke") 
-    $unit_link = '<a href="http://library.columbia.edu/indiv/burke.html" class="topNavbarLink" style="text-decoration: none;">Burke Theological Library</a>';
-
-  if ($unit == "avery") 
-    $unit_link = '<a href="http://library.columbia.edu/indiv/avery.html" class="topNavbarLink" style="text-decoration: none;">Avery Architectural &amp; Fine Arts Library</a>';
-
-  if ($unit == "starr")
-    $unit_link = '<a href="http://library.columbia.edu/indiv/eastasian.html" class="topNavbarLink" style="text-decoration: none;">C.V. Starr East Asian Library</a>';
-
-  // added by fcd1, 7/15/13: Add entry for the Digital Humanities Center
-  if ($unit == "dhc")
-    $unit_link = '<a href="http://library.columbia.edu/locations/dhc.html" class="topNavbarLink" style="text-decoration: none;">Digital Humanities Center</a>';
-
-  return $unit_link;
-}
-
 function cul_general_get_unit_contact($libraryUnit = NULL)
 {
 
