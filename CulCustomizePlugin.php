@@ -598,57 +598,6 @@ function cul_general_legacy_exhibit_builder_page_nav($home_link_title = null,
   return $html;
 }
 
-function cul_general_exhibit_builder_page_nav($home_link_title = null,
-						     $exhibitPage = null)
-{
-  if (!$exhibitPage) {
-    if (!($exhibitPage = get_current_record('exhibit_page', false))) {
-      return "get_current_record returned null";
-    }
-  }
-  $exhibit = $exhibitPage->getExhibit();
-  $pagesTrail = $exhibitPage->getAncestors();
-  $pagesTrail[] = $exhibitPage;
-  $html = '<ul class="exhibit-page-nav navigation" id="secondary-nav">' . "\n";
-  $html .= '<li id="cul-general-exhibit-nav-title">';
-  $html .= '<a class="exhibit-title" href="'. 
-           html_escape(exhibit_builder_exhibit_uri($exhibit)) . '">';
-  if ($home_link_title) {
-    $html .= $home_link_title .'</a></li>' . "\n";
-  } else {
-    $html .= cul_insert_angle_brackets(html_escape($exhibit->title)) .
-             '</a></li>' . "\n";
-  }
-  $page = array_shift($pagesTrail);
-  $linkText = $page->title;
-  $pageExhibit = $page->getExhibit();
-  $pageParent = $page->getParent();
-  $pageSiblings = ($pageParent ? exhibit_builder_child_pages($pageParent) : 
-                                 $pageExhibit->getTopPages()); 
-  $html .= '<li class="precedes-ul-tag">' . 
-           '<ul class="exhibit-page-nav navigation">' . "\n";
-  foreach ($pageSiblings as $pageSibling) {
-    $html .= '<li' . ($pageSibling->id == $page->id ? ' class="current"' : '') . '>';
-    $html .= '<a href="' . 
-             html_escape(exhibit_builder_exhibit_uri($exhibit, $pageSibling)) . '">';
-    $html .= cul_insert_angle_brackets(html_escape($pageSibling->title)) .
-	      "</a></li>\n";
-    if ($pageSibling->id == $page->id) {
-      if ($pagesTrail) {
-        $html .= cul_exhibit_builder_child_page_nav(array_shift($pagesTrail),
-						     $pageSibling);
-      }
-      else {
-        $html .= exhibit_builder_child_page_nav();
-      }
-    }
-  }
-  $html .= "</ul>\n</li>\n";
-  $html .= '</ul>' . "\n";
-  $html = apply_filters('exhibit_builder_page_nav', $html);
-  return $html;
-}
-
 function cul_exhibit_builder_child_page_nav($page,$exhibitPage = null)
 {
   if (!$exhibitPage) {
