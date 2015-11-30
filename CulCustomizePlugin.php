@@ -14,7 +14,7 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
 			    'initialize',
 			    'edit_exhibit_metadata');
 
-  public function filterItemCitation($citation, $array_containing_this)
+  public function filterItemCitation($citation, $array_arg)
   {
     // The definition of getCitation in models/Item.php sets the url given in the citation to the url
     // of the item record. However, we want it to point to the item page within the exhibition.
@@ -22,7 +22,7 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     // current_url will return the needed url. In the case of the generic item record page (not within
     // the context of an exhibition), this will also work since the view will be the item record view, so
     // current_url will equal record_url
-    $pattern = '/' . preg_quote( record_url( $array_containing_this['item'], null, true ), '/' ) . '/';
+    $pattern = '/' . preg_quote( record_url( $array_arg['item'], null, true ), '/' ) . '/';
     $replacement = absolute_url( current_url() );
     return preg_replace($pattern,$replacement,$citation);
   }
