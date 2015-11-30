@@ -491,6 +491,13 @@ class CulCustomizePlugin extends Omeka_Plugin_AbstractPlugin
     if ( !($exhibit_page_containing_item) && $bool_this_is_a_legacy_exhibit) {
       foreach($exhibit_pages as $exhibit_page) {
 	$exhibit = $exhibit_page->getExhibit();
+	// fcd1, 11/30/15: $exhibit_page->getExhibit() will return null if the exhibit
+	// containing the exhibit page is not public AND the access is not being made
+	// via a logged in user with access to non-public exhibits. Of course, if 
+	// $exhibit is null, just skip this iteration in the foreach loop.
+	if (!$exhibit) {
+	  continue;
+	}
 	if (strstr($http_previous,exhibit_builder_exhibit_uri($exhibit,$exhibit_page->getParent() ) ) ) {
 	  $exhibit_page_containing_item = $exhibit_page;
 	  break;
