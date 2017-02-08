@@ -565,6 +565,9 @@ function cul_general_get_unit_contact($libraryUnit = NULL)
   if ($unit == "ldpd")
     $unit_contact = 'Libraries Digital Program Division  / Butler Library  / 535 West 114th St. / New York, NY 10027 / <a href="mailto:ldpd@libraries.cul.columbia.edu">ldpd@libraries.cul.columbia.edu</a>';
 
+  if ($unit == "ua")
+    $unit_contact = 'Columbia University Libraries / University Archives / Rare Book &amp; Manuscript Library / Butler Library, 6th Fl. / 535 West 114th St. / New York, NY 10027 / (212) 854-3786 / <a href="mailto:uarchives@libraries.cul.columbia.edu">uarchives@libraries.cul.columia.edu</a>';
+
   return $unit_contact;
 }
 
